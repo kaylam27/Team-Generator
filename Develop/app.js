@@ -10,6 +10,7 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
+// Array in which to place information for each employee
 const teamMembers = [];
 
 // First round of questions to add manager information to roster (teamMembers array)
@@ -19,45 +20,21 @@ function managerPrompt() {
             type: "input",
             message: "What is the manager's name?",
             name: "managerName",
-            validate: function(answer) {
-                if (answer !== "") { 
-                    return true;
-                }
-                return "Please enter at least one character"
-            }
         },
         {
             type: "input",
             message: "What is the manager's email address?",
             name: "managerEmail",
-            validate: function(answer) {
-                if (answer !== "") { 
-                    return true;
-                }
-                return "Please enter at least one character"
-            }
         },
         {
             type: "input",
             message: "What is the manager's id number?",
             name: "managerId",
-            validate: function(answer) {
-                if (answer !== "") { 
-                    return true;
-                }
-                return "Please enter at least one character"
-            }
         },
         {
             type: "input",
             message: "What is the manager's office number?",
             name: "managerOfficeNumber",
-            validate: function(answer) {
-                if (answer !== "") { 
-                    return true;
-                }
-                return "Please enter at least one character"
-            }
         },
     ])
         .then(function (response) {
@@ -73,6 +50,38 @@ function managerPrompt() {
         });
 };
 
+// Asks user if they would like to add another employee. If they do not, it builds the page.
+function addEmployeePrompt() {
+    return inquirer.prompt([
+        {
+            type: "list",
+            message: "Would you like to add another employee?",
+            name: "moreEmployees",
+            choices: ['Engineer', 'Intern', 'None']
+        }
+    ])
+        .then(function (response) {
+            if (response.moreEmployees === 'engineer') {
+                addEngineerPrompt();
+            }
+
+            else if (response.moreEmployees == 'intern') {
+                addInternPrompt();
+            }
+            else {
+                function buildTeam() {
+                    fs.writeFile(outputPath, render(teamMembers), function(err) {
+                        if (err) console.error(err);
+                    })
+                }
+                buildTeam();
+            }
+        })
+        .catch(function (err) {
+            console.log(err);
+        });
+};
+
 // Asks user questions for engineer, then pushes information to roster.
 function addEngineerPrompt() {
     return inquirer.prompt([
@@ -80,45 +89,21 @@ function addEngineerPrompt() {
             type: "input",
             message: "What is the engineer's name?",
             name: "engineerName",
-            validate: function(answer) {
-                if (answer !== "") { 
-                    return true;
-                }
-                return "Please enter at least one character"
-            }
         },
         {
             type: "input",
             message: "What is the engineer's email address?",
             name: "engineerEmail",
-            validate: function(answer) {
-                if (answer !== "") { 
-                    return true;
-                }
-                return "Please enter at least one character"
-            }
         },
         {
             type: "input",
             message: "What is the engineer's id number?",
             name: "engineerId",
-            validate: function(answer) {
-                if (answer !== "") { 
-                    return true;
-                }
-                return "Please enter at least one character"
-            }
         },
         {
             type: "input",
             message: "What is the engineers Github username?",
             name: "Github",
-            validate: function(answer) {
-                if (answer !== "") { 
-                    return true;
-                }
-                return "Please enter at least one character"
-            }
         }
     ])
         .then(function (response) {
@@ -127,7 +112,7 @@ function addEngineerPrompt() {
                 teamMembers.push(engineer);
             }
             addToArray();
-            addEmpPrompt();
+            addEmployeePrompt();
         })
         .catch(function (err) {
             console.log(err);
@@ -141,45 +126,21 @@ function addInternPrompt() {
             type: "input",
             message: "What is the intern's name?",
             name: "internName",
-            validate: function(answer) {
-                if (answer !== "") { 
-                    return true;
-                }
-                return "Please enter at least one character"
-            }
         },
         {
             type: "input",
             message: "What is the intern's email address?",
             name: "internEmail",
-            validate: function(answer) {
-                if (answer !== "") { 
-                    return true;
-                }
-                return "Please enter at least one character"
-            }
         },
         {
             type: "input",
             message: "What is the intern's id number?",
             name: "internId",
-            validate: function(answer) {
-                if (answer !== "") { 
-                    return true;
-                }
-                return "Please enter at least one character"
-            }
         },
         {
             type: "input",
             message: "Which school is the intern enrolled at?",
             name: "internSchool",
-            validate: function(answer) {
-                if (answer !== "") { 
-                    return true;
-                }
-                return "Please enter at least one character"
-            }
         }
     ])
         .then(function (response) {
@@ -188,7 +149,7 @@ function addInternPrompt() {
                 teamMembers.push(intern)
             }
             addToArray();
-            addEmpPrompt()
+            addEmployeePrompt()
         })
         .catch(function (err) {
             console.log(err);
