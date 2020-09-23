@@ -10,7 +10,7 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
-// Array in which to place information for each employee
+// Array in which to place employees
 const teamMembers = [];
 
 // First round of questions to add manager information to roster (teamMembers array)
@@ -50,31 +50,31 @@ function managerPrompt() {
         });
 };
 
-// Asks user if they would like to add another employee. If they do not, it builds the page.
+// Asks user if they would like to add another employee. If they do not, builds the page.
 function addEmployeePrompt() {
     return inquirer.prompt([
         {
             type: "list",
             message: "Would you like to add another employee?",
-            name: "moreEmployees",
+            name: "otherEmployees",
             choices: ['Engineer', 'Intern', 'None']
         }
     ])
         .then(function (response) {
-            if (response.moreEmployees === 'engineer') {
+            if (response.otherEmployees === 'Engineer') {
                 addEngineerPrompt();
             }
 
-            else if (response.moreEmployees == 'intern') {
+            else if (response.otherEmployees == 'Intern') {
                 addInternPrompt();
             }
             else {
                 function buildTeam() {
-                    fs.writeFile(outputPath, render(teamMembers), function(err) {
-                        if (err) console.error(err);
-                    })
+                    fs.writeFileSync(outputPath, render(teamMembers), "utf-8");
                 }
                 buildTeam();
+
+                return
             }
         })
         .catch(function (err) {
@@ -156,7 +156,7 @@ function addInternPrompt() {
         });
 };
 
-// call the inniatal function to start the program 
+// Call the manager function to start the program 
 managerPrompt()
 
 
